@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.env
+# Data and model artifacts
+dataset/raw/*
+!dataset/raw/README.md
+dataset/processed/*
+!dataset/processed/README.md
+*.pt
+*.pth
+*.ckpt
+*.pkl
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

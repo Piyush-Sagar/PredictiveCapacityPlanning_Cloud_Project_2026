@@ -1,0 +1,22 @@
+# References
+
+- [1] Y. Nie et al., “A Time Series is Worth 64 Words: Long-term Forecasting with Transformers,” ICLR, 2023. https://openreview.net/forum?id=Jbdc0vTOcol
+- [2] T. Zhou et al., “One Fits All: Power General Time Series Analysis by Pretrained LM,” NeurIPS, 2023. https://arxiv.org/abs/2302.11939
+- [3] K. Rasul et al., “Lag-Llama: Towards Foundation Models for Probabilistic Time Series Forecasting,” 2023. https://arxiv.org/abs/2310.08278
+- [4] D. Cao et al., “TEMPO: Prompt-based Generative Pre-trained Transformer for Time Series Forecasting,” ICLR, 2024. https://arxiv.org/abs/2310.04948
+- [5] M. Jin et al., “Time-LLM: Time Series Forecasting by Reprogramming Large Language Models,” ICLR, 2024. https://openreview.net/forum?id=Unb5CVPtae
+- [6] A. F. Ansari et al., “Chronos: Learning the Language of Time Series,” 2024. https://arxiv.org/abs/2403.07815
+- [7] A. Das et al., “A Decoder-only Foundation Model for Time-Series Forecasting,” ICML, 2024. https://proceedings.mlr.press/v235/das24c.html
+- [8] G. Woo et al., “Unified Training of Universal Time Series Forecasting Transformers,” ICML, 2024. https://proceedings.mlr.press/v235/woo24a.html
+- [9] M. Goswami et al., “MOMENT: A Family of Open Time-series Foundation Models,” ICML, 2024. https://arxiv.org/abs/2402.03885
+- [10] Y. Liu et al., “Timer: Generative Pre-trained Transformers Are Large Time Series Models,” ICML, 2024. https://arxiv.org/abs/2402.02368
+- [11] V. Ekambaram et al., “Tiny Time Mixers: Fast Pre-trained Models for Enhanced Zero/Few-Shot Forecasting,” 2024. https://arxiv.org/abs/2401.03955
+- [12] X. Shi et al., “Time-MoE: Billion-Scale Time Series Foundation Models with Mixture of Experts,” ICLR, 2025. https://arxiv.org/abs/2409.16040
+- [13] S. Gao et al., “UniTS: A Unified Multi-Task Time Series Model,” NeurIPS, 2024. https://proceedings.neurips.cc/paper_files/paper/2024/file/fe248e22b241ae5a9adf11493c8c12bc-Paper-Conference.pdf
+- [14] A. Rossi et al., “Forecasting Workload in Cloud Computing: Towards Uncertainty-Aware Predictions and Transfer Learning,” 2023. https://arxiv.org/abs/2303.13525
+- [15] Z. Zhou et al., “AHPA: Adaptive Horizontal Pod Autoscaling Systems on Alibaba Cloud Container Service for Kubernetes,” 2023. https://arxiv.org/abs/2303.03640
+- [16] Alibaba Cluster Trace Program, “Cluster Trace v2018.” https://github.com/alibaba/clusterdata/tree/master/cluster-trace-v2018
+- [17] AWS, “Live Streaming on AWS - Architecture Overview.” https://docs.aws.amazon.com/solutions/latest/live-streaming-on-aws/architecture-overview.html
+- [18] AWS, “Video on Demand and Live Streaming Video with CloudFront.” https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/on-demand-streaming-video.html
+- [19] AWS, “What is Amazon SageMaker AI?” https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html
+- [20] AWS, “Amazon Timestream for LiveAnalytics Architecture.” https://docs.aws.amazon.com/timestream/latest/developerguide/architecture.html
