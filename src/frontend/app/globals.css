@@ -1,0 +1,200 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-console-header: var(--console-header-bg);
+  --color-console-header-hover: var(--console-header-hover);
+  --color-console-header-foreground: var(--console-header-foreground);
+  --color-console-header-muted: var(--console-header-muted);
+  --color-console-header-border: var(--console-header-border);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-info: var(--status-info);
+  --color-status-neutral: var(--status-neutral);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #f2f3f3;
+  --foreground: #0f1b2a;
+  --card: #ffffff;
+  --card-foreground: #0f1b2a;
+  --popover: #ffffff;
+  --popover-foreground: #0f1b2a;
+  --primary: #0972d3;
+  --primary-foreground: #ffffff;
+  --secondary: #eaf2fc;
+  --secondary-foreground: #0972d3;
+  --muted: #f2f3f3;
+  --muted-foreground: #5f6b7a;
+  --accent: #f2f3f3;
+  --accent-foreground: #0f1b2a;
+  --destructive: #d91515;
+  --border: #d5dbdb;
+  --input: #d5dbdb;
+  --ring: #0972d3;
+  --chart-1: #0972d3;
+  --chart-2: #2ea597;
+  --chart-3: #ec7211;
+  --chart-4: #8d64b0;
+  --chart-5: #5f6b7a;
+  --radius: 0.25rem;
+  --sidebar: #fafbfb;
+  --sidebar-foreground: #0f1b2a;
+  --sidebar-primary: #eaf2fc;
+  --sidebar-primary-foreground: #0972d3;
+  --sidebar-accent: #f2f3f3;
+  --sidebar-accent-foreground: #0f1b2a;
+  --sidebar-border: #d5dbdb;
+  --sidebar-ring: #0972d3;
+
+  /* Global top bar stays fixed dark navy across both themes, like the AWS console header. */
+  --console-header-bg: #232f3e;
+  --console-header-hover: #2e3947;
+  --console-header-foreground: #ffffff;
+  --console-header-muted: #99a7b8;
+  --console-header-border: #3b4a5a;
+
+  --status-success: #1d8102;
+  --status-warning: #b8720a;
+  --status-info: #0972d3;
+  --status-neutral: #5f6b7a;
+}
+
+.dark {
+  --background: #0f1b2a;
+  --foreground: #e9ebed;
+  --card: #16212d;
+  --card-foreground: #e9ebed;
+  --popover: #16212d;
+  --popover-foreground: #e9ebed;
+  --primary: #539fe5;
+  --primary-foreground: #0b1b2b;
+  --secondary: #16212d;
+  --secondary-foreground: #539fe5;
+  --muted: #1b2836;
+  --muted-foreground: #8b99a8;
+  --accent: #1b2836;
+  --accent-foreground: #e9ebed;
+  --destructive: #ff5b5b;
+  --border: rgba(139, 153, 168, 0.18);
+  --input: rgba(139, 153, 168, 0.22);
+  --ring: #539fe5;
+  --chart-1: #539fe5;
+  --chart-2: #4cd2c0;
+  --chart-3: #ffb84d;
+  --chart-4: #c0a0e0;
+  --chart-5: #8b99a8;
+  --sidebar: #0b1622;
+  --sidebar-foreground: #e9ebed;
+  --sidebar-primary: #16212d;
+  --sidebar-primary-foreground: #539fe5;
+  --sidebar-accent: #1b2836;
+  --sidebar-accent-foreground: #e9ebed;
+  --sidebar-border: rgba(139, 153, 168, 0.14);
+  --sidebar-ring: #539fe5;
+
+  --console-header-bg: #232f3e;
+  --console-header-hover: #2e3947;
+  --console-header-foreground: #ffffff;
+  --console-header-muted: #99a7b8;
+  --console-header-border: #3b4a5a;
+
+  --status-success: #3db550;
+  --status-warning: #ffb84d;
+  --status-info: #539fe5;
+  --status-neutral: #8b99a8;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Printing a dashboard: force a light, chrome-free page regardless of the active theme. */
+@media print {
+  :root,
+  .dark {
+    --background: #ffffff;
+    --foreground: #0f1b2a;
+    --card: #ffffff;
+    --card-foreground: #0f1b2a;
+    --muted: #f2f3f3;
+    --muted-foreground: #5f6b7a;
+    --border: #d5dbdb;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  header,
+  aside,
+  [data-slot="dropdown-menu-trigger"],
+  [data-slot="select-trigger"],
+  [data-slot="toggle-group"],
+  [data-slot="sheet-portal"],
+  [data-slot="sonner-toaster"] {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  [data-slot="card"] {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}
