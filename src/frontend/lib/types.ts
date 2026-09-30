@@ -103,6 +103,10 @@ export interface CapacityRecommendation {
   budgetThresholdUsd: number;
   estimatedCostUsd: number;
   decisionState: DecisionState;
+  /** Live mode only: units before guardrails, budget cap flag, forecaster used. */
+  rawRequiredUnits?: number;
+  budgetCapped?: boolean;
+  modelUsed?: ModelName;
 }
 
 export interface ModelConfidenceSnapshot {
@@ -128,6 +132,10 @@ export interface AlertItem {
   createdAt: string;
   relatedRecommendationId?: string;
   status: AlertStatus;
+  updatedAt?: string;
+  resolvedBy?: string | null;
+  resolvedAt?: string | null;
+  snsMessageId?: string | null;
 }
 
 export interface CostSlaMetric {
@@ -155,10 +163,156 @@ export interface ModelBenchmarkResult {
   inferenceLatencyMs: number;
   costPer1kInferencesUsd: number;
   memoryFootprintMb: number;
+  /** True for emulated foundation models (no weights executed); see src/ai_models. */
+  simulated?: boolean;
+  host?: string;
+  segments?: Record<string, { n: number; mae: number; smape: number; p90CoveragePct: number }>;
 }
 
 export interface CurrentUser {
   name: string;
   role: "operator" | "admin";
   avatarInitials: string;
+  email?: string;
+  groups?: string[];
+}
+
+// ---------------------------------------------------------------- live-mode API shapes
+
+export type AccountStatus = "pending" | "connected" | "error" | "disconnected";
+
+export interface LinkedAccount {
+  id: string;
+  awsAccountId: string;
+  alias: string;
+  displayName: string;
+  status: AccountStatus;
+  roleArn: string | null;
+  externalId: string;
+  stackId: string | null;
+  regions: Region[];
+  scale: number;
+  createdAt: string;
+  connectedAt: string | null;
+  lastError: string | null;
+  pendingAlerts: number | null;
+}
+
+export interface SampleAccount {
+  accountId: string;
+  alias: string;
+  displayName: string;
+  scale: number;
+  regions: Region[];
+}
+
+export interface SimClock {
+  now: string;
+  tick: number;
+  cursor: number;
+  stepMinutes: number;
+  tickSeconds: number;
+  running: boolean;
+  lastTickAt: string | null;
+  lastTickMs: number | null;
+  liveWindow: { start: string; end: string };
+}
+
+export interface PipelineStage {
+  key: string;
+  label: string;
+  awsService: string;
+  localStandIn: string;
+  status: "ok" | "degraded" | "unknown";
+  detail: string;
+  lastRunAt: string | null;
+}
+
+export interface PipelineStatus {
+  clock: SimClock;
+  stages: PipelineStage[];
+  selection: Record<string, ModelName>;
+  planningModel: ModelName;
+  dataset: { source?: string; rows?: number; start?: string; end?: string; sha256?: string; events?: number };
+  preprocessing: Record<string, number>;
+  aws: { ok: boolean | null; lastError: string | null; endpoint: string | null; platformAccount: string; topicArn?: string | null; calls: number; failures: number };
+  schedulerError: string | null;
+  account: { id: string; awsAccountId: string; alias: string };
+}
+
+export interface ScalingDecisionRow {
+  id: number;
+  region: Region;
+  resourceType: ResourceType;
+  timestamp: string;
+  fromUnits: number;
+  toUnits: number;
+  trigger: "auto" | "approval";
+  actor: string;
+  modelUsed: ModelName;
+  forecastP90: number;
+  awsDesiredCount: number | null;
+  awsRequest: string | null;
+}
+
+export interface PolicyComparisonRow {
+  policy: string;
+  label: string;
+  slaViolationMinutes: number;
+  overloadEvents: number;
+  underutilizationEvents: number;
+  scalingOscillations: number;
+  infrastructureCostUsd: number;
+  modelInferenceCostUsd: number;
+  totalCostUsd: number;
+  avgUtilizationPct: number;
+}
+
+export interface PolicyComparison {
+  systemPolicy: string;
+  testWindow: { start: string; end: string };
+  policies: PolicyComparisonRow[];
+}
+
+export interface CostForecastPoint {
+  TimePeriod: { Start: string; End: string };
+  MeanValue: string;
+  PredictionIntervalLowerBound: string;
+  PredictionIntervalUpperBound: string;
+}
+
+export interface CostForecast {
+  Total: { Amount: string; Unit: string };
+  ForecastResultsByTime: CostForecastPoint[];
+  PredictionIntervalLevel?: number;
+  asOf: string;
+  todaySoFarUsd: number;
+  nextHour: {
+    model: ModelName;
+    p50CostUsd: number;
+    p90CostUsd: number;
+    currentRunRateUsdPerHour: number;
+    byRegion: { region: Region; p50CostUsd: number; p90CostUsd: number; currentRunRateUsdPerHour: number }[];
+  };
+  monthEnd: { month: string; monthToDateUsd: number; meanUsd: number; lowerUsd: number; upperUsd: number };
+  history: { date: string; costUsd: number }[];
+  method: string;
+}
+
+export interface BenchmarkResponse {
+  results: ModelBenchmarkResult[];
+  selection: Record<string, ModelName>;
+  simulatedModels: ModelName[];
+  testWindow: { start: string; end: string };
+}
+
+export interface AccountPolicy {
+  safetyMarginPct: number;
+  mode: "auto" | "approve-all" | "recommend-only";
+  hysteresisPct: number;
+  hysteresisPeriods: number;
+  scaleInCooldownSec: number;
+  budgetMultiplier: number;
+  autoExecuteMaxChangePct: number;
+  approvalMinChangePct: number;
 }

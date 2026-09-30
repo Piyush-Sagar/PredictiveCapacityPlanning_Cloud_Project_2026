@@ -23,9 +23,12 @@ import {
   toggleSort,
   type SortState,
 } from "@/components/dashboard/sortable-table-head";
-import { useLiveTick } from "@/lib/hooks/use-live-tick";
+import { CostForecastCard } from "@/components/dashboard/cost-forecast-card";
+import { PolicyComparisonCard } from "@/components/dashboard/policy-comparison-card";
+import { useApiData } from "@/lib/api/hooks";
+import { IS_LIVE } from "@/lib/config";
 import { generateCostSlaTimeseries, REGIONS } from "@/lib/mock";
-import { REGION_LABELS } from "@/lib/types";
+import { REGION_LABELS, type CostForecast, type CostSlaMetric, type PolicyComparison } from "@/lib/types";
 import { computeTrend, formatDateTime, formatUsd } from "@/lib/utils";
 
 type EventSortKey =
@@ -37,12 +40,13 @@ type EventSortKey =
   | "slaViolationMinutes";
 
 export default function CostSlaPage() {
-  const liveTick = useLiveTick(1000);
   const [dayRange, setDayRange] = useState<DayRange>(7);
-  const metrics = useMemo(
-    () => generateCostSlaTimeseries(REGIONS, dayRange, liveTick),
-    [dayRange, liveTick]
+  const metricsQuery = useApiData<CostSlaMetric[]>(`/cost-sla?days=${dayRange}`, (tick) =>
+    generateCostSlaTimeseries(REGIONS, dayRange, tick)
   );
+  const metrics = useMemo(() => metricsQuery.data ?? [], [metricsQuery.data]);
+  const forecastQuery = useApiData<CostForecast>(IS_LIVE ? "/cost/forecast?days=14" : null, () => undefined as never);
+  const policiesQuery = useApiData<PolicyComparison>(IS_LIVE ? "/cost-sla/policies" : null, () => undefined as never);
   const [eventSort, setEventSort] = useState<SortState<EventSortKey>>({ key: null, direction: "asc" });
 
   const byDay = new Map<
@@ -103,7 +107,14 @@ export default function CostSlaPage() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Cost and SLA metrics, updating live</p>
+        <p className="text-sm text-muted-foreground">
+          Cost and SLA metrics, updating live
+          {IS_LIVE && (
+            <span className="block text-xs">
+              Days before the live window come from the backtest replay of the active policy; today accrues tick by tick.
+            </span>
+          )}
+        </p>
         <DayRangeSelector value={dayRange} onValueChange={setDayRange} />
       </div>
 
@@ -123,6 +134,8 @@ export default function CostSlaPage() {
         />
         <KpiCard label="Scaling oscillations" value={totalOscillations} icon={RefreshCw} />
       </div>
+
+      {forecastQuery.data && <CostForecastCard forecast={forecastQuery.data} />}
 
       <Card>
         <CardHeader>
@@ -144,13 +157,15 @@ export default function CostSlaPage() {
           <CardTitle>SLA violations</CardTitle>
           <CardDescription className="flex items-center gap-1">
             <TrendingDown className="size-3.5" />
-            Minutes per day where latency/error thresholds were breached.
+            Minutes per day where demand exceeded provisioned capacity (any fleet).
           </CardDescription>
         </CardHeader>
         <CardContent>
           <SlaViolationChart data={dailyData} />
         </CardContent>
       </Card>
+
+      {policiesQuery.data && <PolicyComparisonCard comparison={policiesQuery.data} />}
 
       <Card>
         <CardHeader>

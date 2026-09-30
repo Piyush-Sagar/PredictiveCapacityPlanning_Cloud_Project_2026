@@ -9,15 +9,18 @@ import { AlertItem } from "@/components/dashboard/alert-item";
 import { RegionSelector } from "@/components/dashboard/region-selector";
 import { SeveritySelector } from "@/components/dashboard/severity-selector";
 import { AlertTriangle, Bell, ShieldCheck } from "lucide-react";
+import { api, ApiError } from "@/lib/api/client";
+import { useApiData } from "@/lib/api/hooks";
+import { IS_LIVE } from "@/lib/config";
 import {
   generateAlerts,
   generateCapacityRecommendations,
   generateConfidenceSnapshots,
-  MOCK_NOW,
   PREVIOUS_PERIOD_SEED,
   REGIONS,
 } from "@/lib/mock";
-import type { AlertItem as AlertItemType, AlertStatus } from "@/lib/types";
+import { useNowIso, useSession } from "@/lib/session";
+import type { AlertItem as AlertItemType, AlertStatus, ScalingDecisionRow } from "@/lib/types";
 import { computeTrend } from "@/lib/utils";
 
 type StatusFilter = "all" | AlertStatus;
@@ -35,11 +38,15 @@ export default function AlertsPage() {
       .length;
   }, []);
 
-  const [alerts, setAlerts] = useState<AlertItemType[]>(initialAlerts);
+  const [localAlerts, setLocalAlerts] = useState<AlertItemType[]>(initialAlerts);
+  const liveQuery = useApiData<AlertItemType[]>(IS_LIVE ? "/alerts?limit=300" : null, () => []);
+  const { invalidate } = useSession();
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const alerts = IS_LIVE ? (liveQuery.data ?? []) : localAlerts;
   const [filter, setFilter] = useState<StatusFilter>("pending");
   const [regionFilter, setRegionFilter] = useState("all");
   const [severityFilter, setSeverityFilter] = useState("all");
-  const nowIso = MOCK_NOW.toISOString();
+  const nowIso = useNowIso();
 
   const pendingCount = alerts.filter((a) => a.status === "pending").length;
   const criticalCount = alerts.filter((a) => a.severity === "critical" && a.status === "pending").length;
@@ -52,9 +59,34 @@ export default function AlertsPage() {
       (severityFilter === "all" || alert.severity === severityFilter)
   );
 
-  function updateStatus(id: string, status: AlertStatus) {
-    setAlerts((prev) => prev.map((alert) => (alert.id === id ? { ...alert, status } : alert)));
+  async function updateStatus(id: string, status: AlertStatus) {
     const alert = alerts.find((a) => a.id === id);
+    if (IS_LIVE) {
+      if (busyId) return;
+      setBusyId(id);
+      try {
+        const res = await api.post<{ decision?: ScalingDecisionRow | null }>(
+          `/alerts/${id}/${status === "approved" ? "approve" : "reject"}`
+        );
+        if (status === "approved") {
+          toast.success(
+            res.decision
+              ? `Approved — ${res.decision.resourceType} in ${res.decision.region} scaled ${res.decision.fromUnits} → ${res.decision.toUnits} (ECS desired count ${res.decision.awsDesiredCount ?? "n/a"})`
+              : `Acknowledged: ${alert?.title}`
+          );
+        } else {
+          toast.error(`Rejected: ${alert?.title} — re-proposal snoozed for 30 simulated minutes`);
+        }
+        invalidate();
+      } catch (error) {
+        toast.error(error instanceof ApiError ? error.message : String(error));
+        liveQuery.refresh();
+      } finally {
+        setBusyId(null);
+      }
+      return;
+    }
+    setLocalAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
     if (status === "approved") {
       toast.success(`Approved: ${alert?.title}`);
     } else {
@@ -69,7 +101,7 @@ export default function AlertsPage() {
           label="Pending"
           value={pendingCount}
           icon={Bell}
-          trend={computeTrend(pendingCount, previousPendingCount, { goodDirection: "down" })}
+          trend={IS_LIVE ? undefined : computeTrend(pendingCount, previousPendingCount, { goodDirection: "down" })}
         />
         <KpiCard
           label="Critical (pending)"

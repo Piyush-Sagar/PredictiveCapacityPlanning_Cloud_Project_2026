@@ -7,7 +7,10 @@ import { NAV_ITEMS } from "./nav-items";
 
 export function PageHeader() {
   const pathname = usePathname();
-  const currentItem = NAV_ITEMS.find((item) => item.href === pathname) ?? NAV_ITEMS[0];
+  const currentItem =
+    NAV_ITEMS.find((item) => item.href === pathname) ??
+    NAV_ITEMS.find((item) => item.href !== "/" && pathname.startsWith(item.href)) ??
+    NAV_ITEMS[0];
 
   return (
     <div className="border-b border-border bg-background px-4 pt-3 pb-4 sm:px-6">

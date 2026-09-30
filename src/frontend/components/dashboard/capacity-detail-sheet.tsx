@@ -8,7 +8,7 @@ import {
 import { DecisionStateBadge } from "@/components/dashboard/status-badges";
 import { GuardrailStatus } from "@/components/dashboard/guardrail-status";
 import type { CapacityRecommendation } from "@/lib/types";
-import { REGION_LABELS, RESOURCE_LABELS } from "@/lib/types";
+import { MODEL_LABELS, REGION_LABELS, RESOURCE_LABELS } from "@/lib/types";
 import { formatNumber, formatPercent, formatUsd } from "@/lib/utils";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
@@ -43,13 +43,22 @@ export function CapacityDetailSheet({
 
             <div className="flex flex-col gap-4 px-4 pb-4">
               <div className="rounded-lg border bg-muted/40 p-3 font-mono text-xs leading-relaxed">
-                required = ceil(p90 / throughput) &times; (1 + margin)
+                required = ceil(p90 / throughput &times; (1 + margin))
                 <br />
                 required = ceil({formatNumber(recommendation.forecastP90, 1)} /{" "}
-                {formatNumber(recommendation.throughputPerUnit, 1)}) &times; (1 +{" "}
-                {formatPercent(recommendation.safetyMarginPct * 100, 1)})
-                <br />
-                required = <span className="font-semibold">{recommendation.requiredUnits} units</span>
+                {formatNumber(recommendation.throughputPerUnit, 1)} &times; (1 +{" "}
+                {formatPercent(recommendation.safetyMarginPct * 100, 1)}))
+                {recommendation.rawRequiredUnits != null && recommendation.rawRequiredUnits !== recommendation.requiredUnits ? (
+                  <>
+                    <br />= {recommendation.rawRequiredUnits} units &rarr; guardrails &rarr;{" "}
+                    <span className="font-semibold">{recommendation.requiredUnits} units</span>
+                  </>
+                ) : (
+                  <>
+                    <br />
+                    required = <span className="font-semibold">{recommendation.requiredUnits} units</span>
+                  </>
+                )}
               </div>
 
               <div>
@@ -64,6 +73,8 @@ export function CapacityDetailSheet({
                   value={formatUsd(recommendation.estimatedCostUsd)}
                 />
                 <Row label="Budget threshold" value={formatUsd(recommendation.budgetThresholdUsd)} />
+                {recommendation.budgetCapped && <Row label="Budget cap" value="applied" />}
+                {recommendation.modelUsed && <Row label="Forecaster" value={MODEL_LABELS[recommendation.modelUsed] ?? recommendation.modelUsed} />}
               </div>
 
               <div className="flex items-center justify-between">

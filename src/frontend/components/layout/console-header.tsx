@@ -5,6 +5,7 @@ import { Bell, Menu, Radar } from "lucide-react";
 import Link from "next/link";
 
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { AccountSwitcher, SimClockBadge } from "./account-switcher";
 import { CommandMenu } from "./command-menu";
 import { SidebarNav } from "./sidebar";
 import { ThemeToggle } from "./theme-toggle";
@@ -42,6 +43,8 @@ export function ConsoleHeader() {
         <CommandMenu />
       </div>
 
+      <SimClockBadge />
+      <AccountSwitcher />
       <Link
         href="/alerts"
         aria-label="View alerts"

@@ -16,8 +16,15 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { NAV_ITEMS } from "./nav-items";
+import { useApiData } from "@/lib/api/hooks";
+import { IS_LIVE } from "@/lib/config";
 import { generateAlerts, generateCapacityRecommendations, generateConfidenceSnapshots, REGIONS } from "@/lib/mock";
-import { REGION_LABELS } from "@/lib/types";
+import { useRegions, useSession } from "@/lib/session";
+import { REGION_LABELS, type AlertItem } from "@/lib/types";
+
+const MOCK_PENDING = generateAlerts(generateCapacityRecommendations(REGIONS), generateConfidenceSnapshots())
+  .filter((alert) => alert.status === "pending")
+  .slice(0, 4);
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
@@ -35,13 +42,10 @@ export function CommandMenu() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const pendingAlerts = useMemo(() => {
-    const recommendations = generateCapacityRecommendations(REGIONS);
-    const confidenceSnapshots = generateConfidenceSnapshots();
-    return generateAlerts(recommendations, confidenceSnapshots)
-      .filter((alert) => alert.status === "pending")
-      .slice(0, 4);
-  }, []);
+  const regions = useRegions();
+  const { activeAccount } = useSession();
+  const live = useApiData<AlertItem[]>(IS_LIVE && open && activeAccount ? "/alerts?status=pending&limit=4" : null, () => MOCK_PENDING);
+  const pendingAlerts = useMemo(() => (IS_LIVE ? (live.data ?? []) : MOCK_PENDING), [live.data]);
 
   function runCommand(action: () => void) {
     setOpen(false);
@@ -82,7 +86,7 @@ export function CommandMenu() {
 
             <CommandSeparator />
             <CommandGroup heading="Regions">
-              {REGIONS.map((region) => (
+              {regions.map((region) => (
                 <CommandItem
                   key={region}
                   onSelect={() => runCommand(() => router.push(`/forecast?region=${region}`))}

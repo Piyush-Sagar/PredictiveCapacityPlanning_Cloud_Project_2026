@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { SessionProvider } from "@/lib/session";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Predictive Capacity Planner",
   description:
-    "Forecast-driven capacity planning dashboard for video streaming platforms (Phase I demo, mock data).",
+    "Forecast-driven capacity planning dashboard for video streaming platforms, running against a locally simulated AWS account.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <TooltipProvider delay={200}>
-            <AppShell>{children}</AppShell>
+            <SessionProvider>
+              <AppShell>{children}</AppShell>
+            </SessionProvider>
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>

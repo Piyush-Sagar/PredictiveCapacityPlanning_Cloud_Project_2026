@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Bell,
+  Cloud,
   DollarSign,
   Gauge,
   LayoutDashboard,
@@ -58,5 +59,11 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/benchmarking",
     icon: BarChart3,
     description: "Model accuracy, latency, and cost comparison",
+  },
+  {
+    label: "AWS Accounts",
+    href: "/accounts",
+    icon: Cloud,
+    description: "Connect AWS accounts (simulated cross-account IAM role) and tune scaling policy",
   },
 ];
