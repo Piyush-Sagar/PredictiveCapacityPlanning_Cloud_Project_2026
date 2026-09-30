@@ -1,0 +1,87 @@
+# Local, fully simulated stack — no real AWS account is used.
+#   docker compose up --build   →   http://localhost:3000
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: capplan
+      POSTGRES_PASSWORD: capplan
+      POSTGRES_DB: capplan
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U capplan"]
+      interval: 3s
+      retries: 20
+
+  # Fake AWS (S3, SNS, SQS, STS, IAM, CloudFormation, CloudWatch, ECS, Application Auto Scaling).
+  aws:
+    image: motoserver/moto:latest
+    ports: ["4566:5000"]
+    environment:
+      MOTO_PORT: "5000"
+
+  cognito:
+    build: .
+    command: ["uvicorn", "mock_cognito.app:app", "--host", "0.0.0.0", "--port", "9229"]
+    ports: ["9229:9229"]
+    environment:
+      COGNITO_PUBLIC_URL: http://localhost:9229
+      COGNITO_ALLOWED_REDIRECTS: http://localhost:3000/
+      COGNITO_KEY_DIR: /keys
+      AWS_ENDPOINT_URL: http://aws:5000
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1
+    volumes: [cognito-keys:/keys]
+    depends_on: [aws]
+
+  backend:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://capplan:capplan@db:5432/capplan
+      COGNITO_ISSUER: http://localhost:9229/us-east-1_CapPlanDemo
+      COGNITO_JWKS_URL: http://cognito:9229/us-east-1_CapPlanDemo/.well-known/jwks.json
+      COGNITO_PUBLIC_URL: http://localhost:9229
+      FRONTEND_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      SIM_TICK_SECONDS: ${SIM_TICK_SECONDS:-10}
+      AWS_ENDPOINT_URL: http://aws:5000
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1
+    volumes:
+      - pipeline-data:/app/dataset/processed
+      - pipeline-raw:/app/dataset/raw
+      - pipeline-results:/app/results
+    depends_on:
+      db: { condition: service_healthy }
+      aws: { condition: service_started }
+      cognito: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8000/health"]
+      interval: 5s
+      retries: 60
+      start_period: 60s
+
+  frontend:
+    build:
+      context: src/frontend
+      args: { NEXT_PUBLIC_DATA_MODE: live }
+    ports: ["3000:3000"]
+    environment:
+      BACKEND_URL: http://backend:8000
+      COGNITO_PUBLIC_URL: http://localhost:9229
+      COGNITO_INTERNAL_URL: http://cognito:9229
+      COGNITO_CLIENT_ID: capplan-web
+      APP_URL: http://localhost:3000
+    depends_on:
+      backend: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  cognito-keys:
+  pipeline-data:
+  pipeline-raw:
+  pipeline-results:

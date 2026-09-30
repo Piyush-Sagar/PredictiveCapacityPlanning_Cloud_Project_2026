@@ -2,7 +2,7 @@
 
 **Repository:** `PredictiveCapacityPlanning_Cloud_Project_2026`  
 **Course:** BCSE355L - Cloud Architecture Design  
-**Phase:** Phase I - Planning and Documentation  
+**Phase:** Phase II - Implementation (simulated AWS)  
 
 ## Team
 
@@ -50,9 +50,77 @@ A video streaming platform must provision sufficient origin, API, transcoding, a
 
 Alibaba Cluster Trace v2018 will be used as a cloud-workload proxy. It is **not** a native streaming-demand dataset. Streaming-specific demand and event fields will be simulated transparently until prototype CloudFront/CloudWatch telemetry is collected. See [Dataset Details](dataset/Dataset_Details.md).
 
-## Repository Status
+## Implementation (Phase II) — runs locally, no AWS account
 
-No production code is required in Phase I. Folders contain README placeholders describing their intended purpose and future deliverables.
+The framework is implemented end to end and runs entirely on a laptop. **Every
+AWS service is simulated**: [moto](https://github.com/getmoto/moto) stands in
+for S3, SNS/SQS, STS, IAM, CloudFormation, CloudWatch, ECS and Application Auto
+Scaling; a mock Cognito user pool provides the OAuth 2.0 Hosted UI; Postgres
+stands in for Timestream. Only dummy credentials (`test`/`test`) are ever used.
+
+```bash
+docker compose up --build        # Postgres + moto + mock Cognito + API + dashboard
+# or, without Docker (SQLite + moto_server):
+make install && make dev
+```
+
+Open http://localhost:3000 and sign in through the (simulated) Cognito Hosted UI:
+
+| User | Password | Groups | Can |
+|---|---|---|---|
+| `operator@capplan.example` | `Operator#2026` | operators | view, approve/reject scaling, connect accounts |
+| `admin@capplan.example` | `Admin#2026` | admins, operators | + edit scaling policy, control the simulation clock, remove accounts |
+
+Then **AWS Accounts → Launch quick-create stack** to connect one of the sample
+accounts (e.g. `111122223333`, StreamCo Production). That runs a simulated
+CloudFormation stack that creates `CapPlanReadOnlyRole` (trusting the platform
+with a unique ExternalId); the API calls `sts:AssumeRole`, creates the account's
+ECS services, backfills history and starts planning. A simulation clock replays
+one 5-minute step every 10 s (`SIM_TICK_SECONDS`).
+
+### What maps to what
+
+| Architecture (AWS) | Local implementation |
+|---|---|
+| CloudFront/CloudWatch → Kinesis Firehose | telemetry replayer → moto CloudWatch `PutMetricData` + Postgres `metrics` |
+| S3 raw / curated | moto S3 `capplan-raw`, `capplan-curated` |
+| Timestream | Postgres (`src/database`) |
+| Glue / Lambda features | `capplan_ml.features` (validation, 5-min resampling, gap repair, lags, seasonality, scheduled events) |
+| SageMaker TSFM inference | `capplan_ml.models` — real seasonal-naive / XGBoost / LSTM; **simulated** Chronos / TimesFM / Moirai / TTM |
+| Capacity planner | `capplan_ml.capacity` — `ceil(P90 / throughput × (1 + margin))`, min/max, hysteresis, cooldown, budget cap |
+| Application Auto Scaling / ECS | moto ECS `UpdateService` in the customer account (via assumed role) |
+| SNS alerts / approval | moto SNS topic → SQS subscriber; approval workflow in the dashboard |
+| Cognito + API Gateway | `src/aws/mock_cognito` (PKCE, RS256 JWT, JWKS) + JWT authoriser in the API |
+| Cost Explorer | `mock_aws.cost_explorer` — `GetCostAndUsage` / `GetCostForecast`-shaped responses |
+| QuickSight | Next.js dashboard (`src/frontend`) |
+
+### Data and honesty notes
+
+* The dataset is a **bundled, seeded synthetic trace** shaped like Alibaba
+  Cluster Trace v2018 `machine_usage`, with a transparent streaming overlay
+  (see [Dataset Details](dataset/Dataset_Details.md)). `make kaggle` can drive
+  the demand shape from a real Kaggle series (default: NAB AWS CloudWatch
+  metrics) and falls back to synthetic data when no Kaggle token is present.
+* **Foundation models are simulated** (no weights are downloaded or run).
+  They are emulated from documented error, latency and hosting profiles and
+  are labelled `simulated` everywhere they appear. The three baselines are real
+  models trained on the data.
+* In the backtest the event-aware XGBoost/LSTM baselines are the most accurate,
+  so capacity-first model selection picks them. Predictive P90 scaling cuts
+  cost by ~13% versus reactive CPU-target scaling with fewer SLA-violation
+  minutes. See [results](results/README.md).
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `make data` | generate + preprocess the dataset → `dataset/processed/` |
+| `make backtest` | fit all 7 models, rolling-origin backtest, policy simulation → `results/` |
+| `make test` | pytest: guardrails, features, PKCE/JWT, cross-account connect, full API loop |
+| `make dev` / `make up` | run the stack without / with Docker |
+
+Component docs: [ai_models](src/ai_models/README.md) · [backend](src/backend/README.md) ·
+[aws](src/aws/README.md) · [database](src/database/README.md) · [frontend](src/frontend/README.md).
 
 ## Branching
 

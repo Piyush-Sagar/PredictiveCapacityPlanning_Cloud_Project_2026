@@ -1,0 +1,13 @@
+.git
+.venv
+.keys
+**/__pycache__
+**/*.pyc
+.pytest_cache
+src/frontend
+dataset/raw/*
+dataset/processed/*
+results/artifacts
+presentation
+docs
+architecture
