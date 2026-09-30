@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { IS_LIVE } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
 
@@ -35,7 +36,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="border-t border-sidebar-border px-4 py-3 text-xs text-muted-foreground">
-        Phase I demo &middot; mock data
+        {IS_LIVE ? "Live · simulated AWS (moto) · no real account" : "Mock data demo · backend disabled"}
       </div>
     </div>
   );
@@ -43,7 +44,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   return (
-    <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
+    <aside data-tour="sidebar" className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
       <SidebarNav />
     </aside>
   );

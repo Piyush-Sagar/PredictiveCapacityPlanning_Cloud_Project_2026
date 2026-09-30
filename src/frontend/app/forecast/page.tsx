@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Card,
@@ -24,9 +24,11 @@ import { RegionSelector } from "@/components/dashboard/region-selector";
 import { HorizonSelector } from "@/components/dashboard/horizon-selector";
 import { RegionSparklineCard } from "@/components/dashboard/region-sparkline-card";
 import { LiveIndicator } from "@/components/dashboard/live-indicator";
-import { useLiveTick } from "@/lib/hooks/use-live-tick";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useApiData } from "@/lib/api/hooks";
 import { generateAllForecastSeries, generateForecastSeries, REGIONS } from "@/lib/mock";
-import { MODEL_LABELS, REGION_LABELS, type Horizon, type Region } from "@/lib/types";
+import { useRegions } from "@/lib/session";
+import { MODEL_LABELS, REGION_LABELS, type ForecastSeries, type Horizon, type Region } from "@/lib/types";
 import { formatDateTime, formatNumber } from "@/lib/utils";
 
 function isRegion(value: string | null): value is Region {
@@ -36,7 +38,8 @@ function isRegion(value: string | null): value is Region {
 export default function ForecastPage() {
   const [region, setRegion] = useState<Region>("us-east");
   const [horizon, setHorizon] = useState<Horizon>(15);
-  const liveTick = useLiveTick(1000);
+  const regions = useRegions();
+  const activeRegion = regions.includes(region) ? region : regions[0];
 
   // Deep-link support for the command palette's "Regions" results (?region=us-east).
   useEffect(() => {
@@ -48,14 +51,25 @@ export default function ForecastPage() {
     }
   }, []);
 
-  const series = useMemo(
-    () => generateForecastSeries(region, horizon, liveTick),
-    [region, horizon, liveTick]
+  const seriesQuery = useApiData<ForecastSeries>(
+    `/forecasts?region=${activeRegion}&horizon=${horizon}`,
+    (tick) => generateForecastSeries(activeRegion, horizon, tick)
   );
-  const allSeries = useMemo(
-    () => generateAllForecastSeries(REGIONS, horizon, liveTick),
-    [horizon, liveTick]
+  const allQuery = useApiData<ForecastSeries[]>(`/forecasts/all?horizon=${horizon}`, (tick) =>
+    generateAllForecastSeries(REGIONS, horizon, tick)
   );
+  const series = seriesQuery.data;
+  const allSeries = allQuery.data ?? [];
+
+  if (!series) {
+    return (
+      <div className="flex flex-col gap-5">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-80 w-full" />
+        {seriesQuery.error && <p className="text-sm text-destructive">{seriesQuery.error.message}</p>}
+      </div>
+    );
+  }
 
   const recentPoints = series.points.slice(
     Math.max(0, series.nowIndex - 5),
@@ -68,23 +82,27 @@ export default function ForecastPage() {
         <p className="text-sm text-muted-foreground">Regional demand, updating live</p>
         <LiveIndicator />
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div data-tour="forecast-regions" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {allSeries.map((s) => (
           <RegionSparklineCard key={s.region} series={s} />
         ))}
       </div>
 
-      <Card>
+      <Card data-tour="forecast-chart">
         <CardHeader>
-          <CardTitle>Demand forecast — {REGION_LABELS[region]}</CardTitle>
+          <CardTitle>Demand forecast — {REGION_LABELS[activeRegion]}</CardTitle>
           <CardDescription>
             P50/P90 confidence band, {horizon}-minute horizon &middot; model:{" "}
-            {MODEL_LABELS[series.points[0].modelUsed]}
+            {MODEL_LABELS[series.points[0]?.modelUsed ?? "chronos"]}
           </CardDescription>
           <CardAction className="flex items-center gap-3">
             <LiveIndicator />
-            <RegionSelector value={region} onValueChange={(value) => setRegion(value as Region)} />
-            <HorizonSelector value={horizon} onValueChange={setHorizon} />
+            <span data-tour="forecast-region-select">
+              <RegionSelector value={activeRegion} onValueChange={(value) => setRegion(value as Region)} />
+            </span>
+            <span data-tour="forecast-horizon">
+              <HorizonSelector value={horizon} onValueChange={setHorizon} />
+            </span>
           </CardAction>
         </CardHeader>
         <CardContent>
@@ -92,7 +110,7 @@ export default function ForecastPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="forecast-table">
         <CardHeader>
           <CardTitle>Recent points</CardTitle>
           <CardDescription>

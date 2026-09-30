@@ -17,3 +17,10 @@ dataset/processed/*
 Thumbs.db
 .vscode/
 .idea/
+# Local runtime state
+.keys/
+.pytest_cache/
+capplan-dev.db*
+results/artifacts/
+node_modules/
+*.egg-info/

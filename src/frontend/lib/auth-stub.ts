@@ -1,9 +1,8 @@
 import type { CurrentUser } from "@/lib/types";
 
 /**
- * Phase I has no real authentication — Cognito + API Gateway are described
- * in the architecture docs but not implemented. This stands in for a signed
- * in session so the dashboard shell reads as "authenticated".
+ * Mock-mode user. In live mode (NEXT_PUBLIC_DATA_MODE=live) the signed-in
+ * Cognito user comes from the ID token via `lib/session.tsx` instead.
  */
 export const CURRENT_USER: CurrentUser = {
   name: "Ops Demo User",

@@ -1,0 +1,11 @@
+policy,policyLabel,slaViolationMinutes,overloadEvents,underutilizationEvents,scalingOscillations,infrastructureCostUsd,modelInferenceCostUsd,avgUtilizationPct,totalCostUsd
+static,Static schedule,630,56,30,0,130185.26,0.0,68.4,130185.26
+reactive,Reactive (70% CPU target),130,49,3,196,122484.12,0.0,67.1,122484.12
+predictive-xgboost-p90,Predictive P90 · xgboost,115,57,0,247,106017.07,2.1,77.7,106019.17
+predictive-lstm-p90,Predictive P90 · lstm,140,58,0,217,106388.7,2.1,77.4,106390.8
+predictive-chronos-p90,Predictive P90 · chronos,90,58,0,302,107600.11,236.6,76.4,107836.71
+predictive-timesfm-p90,Predictive P90 · timesfm,100,58,0,347,108015.44,236.6,76.1,108252.04
+predictive-moirai-p90,Predictive P90 · moirai,100,58,0,325,108191.47,236.6,75.9,108428.07
+predictive-ttm-p90,Predictive P90 · ttm,100,64,0,407,108530.62,39.9,75.6,108570.52
+predictive-seasonal-naive-p90,Predictive P90 · seasonal-naive,1485,90,8,117,114102.31999999999,2.1,73.0,114104.42
+predictive-xgboost-p50,Predictive P50 · xgboost,175,91,0,194,103410.07,2.1,79.4,103412.17

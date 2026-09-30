@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Bell, MapPin, Search, SunMoon } from "lucide-react";
+import { Bell, MapPin, Search, Sparkles, SunMoon } from "lucide-react";
+
+import { defaultFilter } from "cmdk";
+
+import { openAssistant } from "@/components/assistant/assistant";
 
 import {
   Command,
@@ -16,11 +20,35 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { NAV_ITEMS } from "./nav-items";
+import { useApiData } from "@/lib/api/hooks";
+import { IS_LIVE } from "@/lib/config";
 import { generateAlerts, generateCapacityRecommendations, generateConfidenceSnapshots, REGIONS } from "@/lib/mock";
-import { REGION_LABELS } from "@/lib/types";
+import { useRegions, useSession } from "@/lib/session";
+import { REGION_LABELS, type AlertItem } from "@/lib/types";
+
+const MOCK_PENDING = generateAlerts(generateCapacityRecommendations(REGIONS), generateConfidenceSnapshots())
+  .filter((alert) => alert.status === "pending")
+  .slice(0, 4);
+
+const ASK_AI = "__ask_ai__";
+const QUESTION_START = /^(how|what|when|where|which|who|why|will|is|are|can|could|should|do|does|any|show|tell|explain|give|list|compare)\b/i;
+
+/** Typed text that reads like a question for the assistant rather than a page/region search. */
+function looksLikeQuestion(q: string): boolean {
+  const t = q.trim();
+  return t.includes("?") || (t.split(/\s+/).length >= 3 && QUESTION_START.test(t)) || t.split(/\s+/).length >= 5;
+}
+
+/** Normal fuzzy search, plus an "Ask AI" entry that jumps to the top for questions. */
+function paletteFilter(value: string, search: string, keywords?: string[]): number {
+  // Always shown; ranked first for questions, last for plain searches (render order matches).
+  if (value === ASK_AI) return search.trim() ? (looksLikeQuestion(search) ? 2 : 0.0001) : 1;
+  return defaultFilter(value, search, keywords);
+}
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -35,18 +63,38 @@ export function CommandMenu() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const pendingAlerts = useMemo(() => {
-    const recommendations = generateCapacityRecommendations(REGIONS);
-    const confidenceSnapshots = generateConfidenceSnapshots();
-    return generateAlerts(recommendations, confidenceSnapshots)
-      .filter((alert) => alert.status === "pending")
-      .slice(0, 4);
-  }, []);
+  const regions = useRegions();
+  const { activeAccount } = useSession();
+  const live = useApiData<AlertItem[]>(IS_LIVE && open && activeAccount ? "/alerts?status=pending&limit=4" : null, () => MOCK_PENDING);
+  const pendingAlerts = useMemo(() => (IS_LIVE ? (live.data ?? []) : MOCK_PENDING), [live.data]);
 
   function runCommand(action: () => void) {
     setOpen(false);
+    setQuery("");
     action();
   }
+
+  // Questions put "Ask AI" on top (so Enter asks); plain searches keep it at the bottom.
+  const askFirst = !query.trim() || looksLikeQuestion(query);
+  const askGroup = (
+            <CommandGroup heading="Ask AI">
+              <CommandItem value={ASK_AI} onSelect={() => runCommand(() => openAssistant(query.trim() || undefined))}>
+                <Sparkles className="text-[#ec7211]" />
+                <span className="truncate">
+                  {query.trim() ? (
+                    <>
+                      Ask AI: <span className="font-medium">“{query.trim()}”</span>
+                    </>
+                  ) : (
+                    "Ask the capacity assistant a question"
+                  )}
+                </span>
+                {query.trim() && looksLikeQuestion(query) && (
+                  <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">↵ Enter to ask</span>
+                )}
+              </CommandItem>
+            </CommandGroup>
+  );
 
   return (
     <>
@@ -63,10 +111,13 @@ export function CommandMenu() {
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <Command>
-          <CommandInput placeholder="Search pages, regions, alerts…" />
+        <Command filter={paletteFilter}>
+          <CommandInput placeholder="Search pages, regions, alerts… or ask a question" value={query} onValueChange={setQuery} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
+
+            {askFirst && askGroup}
+            {askFirst && <CommandSeparator />}
 
             <CommandGroup heading="Pages">
               {NAV_ITEMS.map((item) => {
@@ -82,7 +133,7 @@ export function CommandMenu() {
 
             <CommandSeparator />
             <CommandGroup heading="Regions">
-              {REGIONS.map((region) => (
+              {regions.map((region) => (
                 <CommandItem
                   key={region}
                   onSelect={() => runCommand(() => router.push(`/forecast?region=${region}`))}
@@ -107,6 +158,7 @@ export function CommandMenu() {
               </>
             )}
 
+            {!askFirst && askGroup}
             <CommandSeparator />
             <CommandGroup heading="Actions">
               <CommandItem

@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { REGION_LABELS, type Region } from "@/lib/types";
-import { REGIONS } from "@/lib/mock";
+import { useRegions } from "@/lib/session";
 
 export function RegionSelector({
   value,
@@ -13,6 +13,7 @@ export function RegionSelector({
   onValueChange: (value: string) => void;
   includeAll?: boolean;
 }) {
+  const regions = useRegions();
   return (
     <Select value={value} onValueChange={(next) => onValueChange(String(next))}>
       <SelectTrigger className="w-40">
@@ -20,7 +21,7 @@ export function RegionSelector({
       </SelectTrigger>
       <SelectContent>
         {includeAll && <SelectItem value="all">All regions</SelectItem>}
-        {REGIONS.map((region: Region) => (
+        {regions.map((region: Region) => (
           <SelectItem key={region} value={region}>
             {REGION_LABELS[region]}
           </SelectItem>

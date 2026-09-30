@@ -1,0 +1,380 @@
+[
+  {
+    "modelName": "chronos",
+    "horizonMinutes": 15,
+    "region": "sa-east",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 91.5,
+    "calibrationErrorPct": 1.5,
+    "confidenceScore": 95,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 93.8,
+      "us-west": 93.3,
+      "eu-west": 90.8,
+      "ap-south": 90.3,
+      "sa-east": 89.3
+    }
+  },
+  {
+    "modelName": "chronos",
+    "horizonMinutes": 30,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 94.3,
+    "calibrationErrorPct": 4.3,
+    "confidenceScore": 85,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 93.6,
+      "us-west": 95.7,
+      "eu-west": 91.5,
+      "ap-south": 95.1,
+      "sa-east": 95.7
+    }
+  },
+  {
+    "modelName": "chronos",
+    "horizonMinutes": 60,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 95.5,
+    "calibrationErrorPct": 5.5,
+    "confidenceScore": 81,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 95.2,
+      "us-west": 96.2,
+      "eu-west": 94.5,
+      "ap-south": 95.7,
+      "sa-east": 96.1
+    }
+  },
+  {
+    "modelName": "timesfm",
+    "horizonMinutes": 15,
+    "region": "us-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 92.4,
+    "calibrationErrorPct": 2.4,
+    "confidenceScore": 92,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 93.5,
+      "us-west": 90.6,
+      "eu-west": 91.1,
+      "ap-south": 91.6,
+      "sa-east": 95.0
+    }
+  },
+  {
+    "modelName": "timesfm",
+    "horizonMinutes": 30,
+    "region": "ap-south",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 94.2,
+    "calibrationErrorPct": 4.2,
+    "confidenceScore": 86,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 93.6,
+      "us-west": 95.1,
+      "eu-west": 93.8,
+      "ap-south": 93.5,
+      "sa-east": 95.0
+    }
+  },
+  {
+    "modelName": "timesfm",
+    "horizonMinutes": 60,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 95.0,
+    "calibrationErrorPct": 5.0,
+    "confidenceScore": 83,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 94.8,
+      "us-west": 96.0,
+      "eu-west": 94.0,
+      "ap-south": 94.3,
+      "sa-east": 95.6
+    }
+  },
+  {
+    "modelName": "moirai",
+    "horizonMinutes": 15,
+    "region": "us-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 92.2,
+    "calibrationErrorPct": 2.2,
+    "confidenceScore": 93,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 91.9,
+      "us-west": 91.3,
+      "eu-west": 91.8,
+      "ap-south": 92.1,
+      "sa-east": 93.8
+    }
+  },
+  {
+    "modelName": "moirai",
+    "horizonMinutes": 30,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 94.5,
+    "calibrationErrorPct": 4.5,
+    "confidenceScore": 85,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 94.5,
+      "us-west": 93.8,
+      "eu-west": 93.4,
+      "ap-south": 94.3,
+      "sa-east": 96.3
+    }
+  },
+  {
+    "modelName": "moirai",
+    "horizonMinutes": 60,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 95.8,
+    "calibrationErrorPct": 5.8,
+    "confidenceScore": 80,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 95.5,
+      "us-west": 97.3,
+      "eu-west": 94.6,
+      "ap-south": 95.5,
+      "sa-east": 96.2
+    }
+  },
+  {
+    "modelName": "ttm",
+    "horizonMinutes": 15,
+    "region": "ap-south",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 91.2,
+    "calibrationErrorPct": 1.2,
+    "confidenceScore": 96,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 91.4,
+      "us-west": 93.7,
+      "eu-west": 89.8,
+      "ap-south": 89.4,
+      "sa-east": 91.5
+    }
+  },
+  {
+    "modelName": "ttm",
+    "horizonMinutes": 30,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 93.7,
+    "calibrationErrorPct": 3.7,
+    "confidenceScore": 87,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 92.9,
+      "us-west": 94.6,
+      "eu-west": 92.6,
+      "ap-south": 93.5,
+      "sa-east": 94.9
+    }
+  },
+  {
+    "modelName": "ttm",
+    "horizonMinutes": 60,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 94.8,
+    "calibrationErrorPct": 4.8,
+    "confidenceScore": 84,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 95.1,
+      "us-west": 96.3,
+      "eu-west": 93.5,
+      "ap-south": 94.0,
+      "sa-east": 95.3
+    }
+  },
+  {
+    "modelName": "seasonal-naive",
+    "horizonMinutes": 15,
+    "region": "ap-south",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 86.6,
+    "calibrationErrorPct": 3.4,
+    "confidenceScore": 82,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 87.1,
+      "us-west": 87.8,
+      "eu-west": 85.8,
+      "ap-south": 85.3,
+      "sa-east": 87.3
+    }
+  },
+  {
+    "modelName": "seasonal-naive",
+    "horizonMinutes": 30,
+    "region": "ap-south",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 86.7,
+    "calibrationErrorPct": 3.3,
+    "confidenceScore": 83,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 87.2,
+      "us-west": 87.9,
+      "eu-west": 85.8,
+      "ap-south": 85.4,
+      "sa-east": 87.3
+    }
+  },
+  {
+    "modelName": "seasonal-naive",
+    "horizonMinutes": 60,
+    "region": "ap-south",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 86.9,
+    "calibrationErrorPct": 3.1,
+    "confidenceScore": 83,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 87.4,
+      "us-west": 88.2,
+      "eu-west": 86.0,
+      "ap-south": 85.6,
+      "sa-east": 87.5
+    }
+  },
+  {
+    "modelName": "xgboost",
+    "horizonMinutes": 15,
+    "region": "eu-west",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 89.7,
+    "calibrationErrorPct": 0.3,
+    "confidenceScore": 93,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 89.3,
+      "us-west": 90.7,
+      "eu-west": 89.2,
+      "ap-south": 89.8,
+      "sa-east": 89.7
+    }
+  },
+  {
+    "modelName": "xgboost",
+    "horizonMinutes": 30,
+    "region": "us-east",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 88.6,
+    "calibrationErrorPct": 1.4,
+    "confidenceScore": 89,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 86.9,
+      "us-west": 89.4,
+      "eu-west": 88.7,
+      "ap-south": 89.3,
+      "sa-east": 88.7
+    }
+  },
+  {
+    "modelName": "xgboost",
+    "horizonMinutes": 60,
+    "region": "us-east",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 86.9,
+    "calibrationErrorPct": 3.1,
+    "confidenceScore": 83,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 85.9,
+      "us-west": 88.8,
+      "eu-west": 86.3,
+      "ap-south": 86.8,
+      "sa-east": 86.7
+    }
+  },
+  {
+    "modelName": "lstm",
+    "horizonMinutes": 15,
+    "region": "us-east",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 94.7,
+    "calibrationErrorPct": 4.7,
+    "confidenceScore": 78,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 92.8,
+      "us-west": 96.2,
+      "eu-west": 94.9,
+      "ap-south": 94.4,
+      "sa-east": 95.3
+    }
+  },
+  {
+    "modelName": "lstm",
+    "horizonMinutes": 30,
+    "region": "us-east",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 93.7,
+    "calibrationErrorPct": 3.7,
+    "confidenceScore": 81,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 91.7,
+      "us-west": 95.5,
+      "eu-west": 93.1,
+      "ap-south": 94.2,
+      "sa-east": 94.1
+    }
+  },
+  {
+    "modelName": "lstm",
+    "horizonMinutes": 60,
+    "region": "sa-east",
+    "targetCoveragePct": 90.0,
+    "actualCoveragePct": 91.6,
+    "calibrationErrorPct": 1.6,
+    "confidenceScore": 89,
+    "status": "nominal",
+    "fallbackModel": null,
+    "regionCoverage": {
+      "us-east": 91.4,
+      "us-west": 93.0,
+      "eu-west": 90.8,
+      "ap-south": 92.3,
+      "sa-east": 90.6
+    }
+  }
+]
