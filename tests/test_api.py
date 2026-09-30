@@ -183,3 +183,13 @@ def test_assistant_offline_answers(env, question, tool):
     body = r.json()
     assert body["mode"] == "offline" and tool in body["toolsUsed"] and body["answer"]
 
+
+def test_assistant_guardrail_blocks_off_topic(env):
+    r = env["api"].post(
+        "/api/assistant/chat",
+        headers=env["op"],
+        json={"messages": [{"role": "user", "content": "can you write python code for printing hello world"}]},
+    )
+    body = r.json()
+    assert r.status_code == 200 and body["mode"] == "guardrail" and body["guardrail"] == "code"
+    assert "```" not in body["answer"]

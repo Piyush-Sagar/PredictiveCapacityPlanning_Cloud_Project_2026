@@ -18,12 +18,13 @@ export function openAssistant(question?: string) {
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
-  meta?: { mode?: string; model?: string | null; toolsUsed?: string[]; notice?: string };
+  meta?: { mode?: string; model?: string | null; toolsUsed?: string[]; notice?: string; guardrail?: string };
 }
 
 interface ChatResponse {
   answer: string;
-  mode: "openrouter" | "offline";
+  mode: "openrouter" | "offline" | "guardrail";
+  guardrail?: string;
   model: string | null;
   toolsUsed: string[];
   suggestions?: string[];
@@ -48,6 +49,14 @@ const TOOL_LABELS: Record<string, string> = {
   get_policy_comparison: "policy backtest",
   get_model_performance: "model benchmark",
   get_scaling_policy: "scaling policy",
+};
+
+const GUARDRAIL_LABELS: Record<string, string> = {
+  off_topic: "outside dashboard scope",
+  code: "code requests not supported",
+  injection: "instruction override blocked",
+  too_long: "question too long",
+  rate_limit: "rate limit",
 };
 
 // --------------------------------------------------------------- tiny, safe markdown renderer
@@ -164,7 +173,7 @@ export function AssistantDialog() {
         });
         setMessages([
           ...history,
-          { role: "assistant", content: res.answer, meta: { mode: res.mode, model: res.model, toolsUsed: res.toolsUsed, notice: res.notice } },
+          { role: "assistant", content: res.answer, meta: { mode: res.mode, model: res.model, toolsUsed: res.toolsUsed, notice: res.notice, guardrail: res.guardrail } },
         ]);
         if (res.suggestions?.length) setSuggestions(res.suggestions);
       } catch (error) {
@@ -252,7 +261,11 @@ export function AssistantDialog() {
                 {m.role === "user" ? m.content : <Markdown text={m.content} />}
                 {m.meta && (
                   <p className="mt-2 border-t border-border/60 pt-1.5 text-[10px] text-muted-foreground">
-                    {m.meta.mode === "openrouter" ? `OpenRouter · ${m.meta.model}` : "offline answer"}
+                    {m.meta.mode === "guardrail"
+                      ? `🛡 Guardrail · ${GUARDRAIL_LABELS[m.meta.guardrail ?? ""] ?? "blocked"}`
+                      : m.meta.mode === "openrouter"
+                        ? `OpenRouter · ${m.meta.model}`
+                        : "offline answer"}
                     {m.meta.toolsUsed && m.meta.toolsUsed.length > 0 &&
                       ` · data: ${[...new Set(m.meta.toolsUsed)].map((t) => TOOL_LABELS[t] ?? t).join(", ")}`}
                     {m.meta.notice && ` · ${m.meta.notice}`}
@@ -302,6 +315,7 @@ export function AssistantDialog() {
               }}
               placeholder="e.g. How many servers will AP South need at the next peak?"
               aria-label="Ask the capacity assistant"
+              maxLength={500}
               className="max-h-32 min-h-9 flex-1 resize-none rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />
             {messages.length > 0 && (

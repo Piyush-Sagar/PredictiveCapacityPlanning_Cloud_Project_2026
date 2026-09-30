@@ -31,7 +31,7 @@ from capplan_ml.pipeline import load_events
 
 from ..runtime import runtime
 from ..serializers import iso
-from . import engine
+from . import engine, guardrails
 
 log = logging.getLogger("capplan.assistant")
 
@@ -305,7 +305,9 @@ Answer questions about upcoming demand, servers needed, costs, scheduled events,
 - Always call a tool for numbers; never invent figures.
 - Viewer numbers are in thousands (k). P50 = most likely, P90 = safe upper estimate the planner provisions for.
 - Be concise: a short direct answer first, then at most a few bullets. Use markdown bold for key numbers. Times in UTC.
-- If a question is outside this dashboard's scope, say so briefly."""
+- If a question is outside this dashboard's scope, say so briefly.
+
+""" + guardrails.SCOPE_RULES
 
 
 class ToolsUnsupported(Exception):
@@ -528,10 +530,35 @@ def offline_answer(ctx: Ctx, question: str) -> dict:
 # --------------------------------------------------------------------------- entry point
 
 
-def chat(db: Session, acct: Account, history: list[dict]) -> dict:
-    ctx = Ctx(db, acct)
-    history = [m for m in history if m.get("role") in ("user", "assistant") and m.get("content")][-12:]
+DEFAULT_SUGGESTIONS = [
+    "What's the forecast for the next hour?",
+    "How many servers will we need for the next peak?",
+    "What will this month cost?",
+    "Any events coming up tonight?",
+]
+
+
+def _blocked(reason: str, message: str) -> dict:
+    return {"answer": message, "mode": "guardrail", "guardrail": reason, "model": None, "toolsUsed": [], "suggestions": DEFAULT_SUGGESTIONS}
+
+
+def chat(db: Session, acct: Account, history: list[dict], user_key: str = "anon") -> dict:
+    ok, retry = guardrails.limiter.allow(user_key)
+    if not ok:
+        return _blocked("rate_limit", f"You're asking faster than I can check the data. Try again in {retry} s.")
+    # Client-supplied history: keep it short and bounded (assistant turns can't smuggle long instructions).
+    history = [
+        {"role": m["role"], "content": m["content"][: 1500 if m["role"] == "assistant" else guardrails.MAX_QUESTION_CHARS + 1]}
+        for m in history
+        if m.get("role") in ("user", "assistant") and m.get("content")
+    ][-8:]
     question = next((m["content"] for m in reversed(history) if m["role"] == "user"), "")
+    verdict = guardrails.check_input(question, history)
+    if not verdict.allowed:
+        log.info("assistant guardrail (%s): %.80s", verdict.reason, question)
+        return _blocked(verdict.reason, verdict.message)
+
+    ctx = Ctx(db, acct)
     cfg = settings()
     offline = offline_answer(ctx, question)
     if cfg["mode"] == "offline":
@@ -542,9 +569,14 @@ def chat(db: Session, acct: Account, history: list[dict]) -> dict:
         except ToolsUnsupported as exc:
             log.info("model %s has no tool calling (%s); using context grounding", cfg["model"], exc)
             out = answer_with_context(ctx, cfg, history, offline["toolsUsed"])
-        out["suggestions"] = offline["suggestions"]
-        return out
     except Exception as exc:  # noqa: BLE001 - never leave the user without an answer
         log.warning("OpenRouter failed, using offline answer: %s", exc)
         offline["notice"] = f"OpenRouter unavailable ({type(exc).__name__}); answered offline."
         return offline
+    post = guardrails.check_output(out["answer"])
+    if not post.allowed:
+        log.info("assistant output guardrail (%s)", post.reason)
+        return _blocked(post.reason, post.message)
+    out["answer"] = guardrails.truncate(out["answer"])
+    out["suggestions"] = offline["suggestions"]
+    return out

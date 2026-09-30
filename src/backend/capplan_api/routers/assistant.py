@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from capplan_db.models import Account
 
-from ..auth import require_operator
+from ..auth import Principal, require_operator
 from ..deps import account_scope, get_db
 from ..services import assistant
 
@@ -31,5 +31,10 @@ def status():
 
 
 @router.post("/chat")
-def chat(body: ChatRequest, db: Session = Depends(get_db), acct: Account = Depends(account_scope)):
-    return assistant.chat(db, acct, [m.model_dump() for m in body.messages])
+def chat(
+    body: ChatRequest,
+    db: Session = Depends(get_db),
+    acct: Account = Depends(account_scope),
+    p: Principal = Depends(require_operator),
+):
+    return assistant.chat(db, acct, [m.model_dump() for m in body.messages], user_key=p.sub)
