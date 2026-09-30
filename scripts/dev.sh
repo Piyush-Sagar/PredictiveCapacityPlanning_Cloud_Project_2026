@@ -5,6 +5,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 PY="$ROOT/.venv/bin"
+# Local secrets / overrides (e.g. OPENROUTER_API_KEY) — git-ignored.
+if [ -f "$ROOT/.env" ]; then set -a; . "$ROOT/.env"; set +a; fi
 [ -x "$PY/python" ] || { echo "run 'make install' first"; exit 1; }
 
 if [ "$(uname)" = "Darwin" ]; then

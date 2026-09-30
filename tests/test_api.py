@@ -165,3 +165,21 @@ def test_delete_is_admin_only(env):
     acct = _connect(env, "444455556666")
     assert api.delete(f"/api/accounts/{acct['id']}", headers=env["op"]).status_code == 403
     assert api.delete(f"/api/accounts/{acct['id']}", headers=env["admin"]).status_code == 204
+
+
+@pytest.mark.parametrize(
+    "question, tool",
+    [
+        ("How many viewers will US East have in the next hour?", "get_demand_forecast"),
+        ("How many servers will we need for the next peak?", "get_capacity_plan"),
+        ("What will this month cost?", "get_cost_outlook"),
+        ("Any big events coming up tonight?", "get_upcoming_events"),
+        ("Is predictive scaling worth it?", "get_policy_comparison"),
+    ],
+)
+def test_assistant_offline_answers(env, question, tool):
+    r = env["api"].post("/api/assistant/chat", headers=env["op"], json={"messages": [{"role": "user", "content": question}]})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["mode"] == "offline" and tool in body["toolsUsed"] and body["answer"]
+

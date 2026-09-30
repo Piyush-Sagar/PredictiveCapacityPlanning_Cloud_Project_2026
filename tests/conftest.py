@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault("COGNITO_KEY_DIR", str(ROOT / ".pytest_cache" / "cognito-keys"))
 os.environ["SCHEDULER_ENABLED"] = "false"
 os.environ.pop("AWS_ENDPOINT_URL", None)
+os.environ.pop("OPENROUTER_API_KEY", None)  # assistant tests run in offline mode
 os.environ.update(AWS_ACCESS_KEY_ID="test", AWS_SECRET_ACCESS_KEY="test", AWS_DEFAULT_REGION="us-east-1")
 
 if sys.platform == "darwin":  # xgboost needs libomp; torch ships one

@@ -21,7 +21,7 @@ from capplan_ml import config as mlconfig
 from mock_aws import resources
 
 from .config import get_settings
-from .routers import accounts, alerts, benchmarks, capacity, confidence, cost, forecasts, system
+from .routers import accounts, alerts, assistant, benchmarks, capacity, confidence, cost, forecasts, system
 from .runtime import runtime
 from .services import engine
 from .services import scheduler as sched_mod
@@ -107,7 +107,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-for r in (system, accounts, forecasts, capacity, confidence, alerts, cost, benchmarks):
+for r in (system, accounts, forecasts, capacity, confidence, alerts, cost, benchmarks, assistant):
     app.include_router(r.router)
 
 

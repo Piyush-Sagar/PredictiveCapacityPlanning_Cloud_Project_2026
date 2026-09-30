@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, GraduationCap, Menu, Radar } from "lucide-react";
+import { Bell, GraduationCap, Menu, Radar, Sparkles } from "lucide-react";
+
+import { AssistantDialog, openAssistant } from "@/components/assistant/assistant";
 import Link from "next/link";
 
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
@@ -45,6 +47,16 @@ export function ConsoleHeader() {
         <CommandMenu />
       </div>
 
+      <button
+        type="button"
+        onClick={() => openAssistant()}
+        data-tour="assistant-button"
+        className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-console-header-border px-2.5 text-xs font-medium text-console-header-foreground transition-colors hover:bg-console-header-hover"
+      >
+        <Sparkles className="size-3.5 text-[#ec7211]" />
+        <span className="hidden sm:inline">Ask AI</span>
+      </button>
+      <AssistantDialog />
       <div data-tour="header-context" className="flex shrink-0 items-center gap-2">
         <SimClockBadge />
         <AccountSwitcher />
