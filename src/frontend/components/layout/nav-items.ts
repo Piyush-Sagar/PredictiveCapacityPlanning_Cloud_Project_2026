@@ -4,6 +4,7 @@ import {
   Cloud,
   DollarSign,
   Gauge,
+  GraduationCap,
   LayoutDashboard,
   Server,
   TrendingUp,
@@ -59,6 +60,12 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/benchmarking",
     icon: BarChart3,
     description: "Model accuracy, latency, and cost comparison",
+  },
+  {
+    label: "Tutorial",
+    href: "/tutorial",
+    icon: GraduationCap,
+    description: "What this dashboard does, the key terms, and a guided tour of every feature",
   },
   {
     label: "AWS Accounts",

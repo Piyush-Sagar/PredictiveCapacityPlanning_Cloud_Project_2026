@@ -19,7 +19,7 @@ export function PolicyComparisonCard({ comparison }: { comparison: PolicyCompari
   const data = rows.map((r) => ({ ...r, name: r.label.replace("Predictive ", "").replace(" · ", " ") }));
 
   return (
-    <Card>
+    <Card data-tour="cost-policies">
       <CardHeader>
         <CardTitle>Scaling policy comparison (backtest)</CardTitle>
         <CardDescription>

@@ -81,7 +81,7 @@ export default function CapacityPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div data-tour="capacity-kpis" className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Required units"
           value={totalRequired}
@@ -104,7 +104,7 @@ export default function CapacityPage() {
         />
       </div>
 
-      <Card>
+      <Card data-tour="capacity-chart">
         <CardHeader>
           <CardTitle>Current vs. required units by region</CardTitle>
           <CardDescription>Aggregated across all resource types per region.</CardDescription>
@@ -114,7 +114,7 @@ export default function CapacityPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="capacity-table">
         <CardHeader>
           <CardTitle>Capacity recommendations</CardTitle>
           <CardDescription>
@@ -222,7 +222,7 @@ export default function CapacityPage() {
       </Card>
 
       {IS_LIVE && (
-        <Card>
+        <Card data-tour="capacity-audit">
           <CardHeader>
             <CardTitle>Scaling decision audit</CardTitle>
             <CardDescription>

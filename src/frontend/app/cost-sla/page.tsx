@@ -115,10 +115,12 @@ export default function CostSlaPage() {
             </span>
           )}
         </p>
-        <DayRangeSelector value={dayRange} onValueChange={setDayRange} />
+        <span data-tour="cost-range">
+          <DayRangeSelector value={dayRange} onValueChange={setDayRange} />
+        </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div data-tour="cost-kpis" className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label={`Infra cost (${dayRange}d)`}
           value={formatUsd(totalInfraCost)}
@@ -137,7 +139,7 @@ export default function CostSlaPage() {
 
       {forecastQuery.data && <CostForecastCard forecast={forecastQuery.data} />}
 
-      <Card>
+      <Card data-tour="cost-trend">
         <CardHeader>
           <CardTitle>Cost trend</CardTitle>
           <CardDescription>
@@ -152,7 +154,7 @@ export default function CostSlaPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="cost-sla-chart">
         <CardHeader>
           <CardTitle>SLA violations</CardTitle>
           <CardDescription className="flex items-center gap-1">
@@ -167,7 +169,7 @@ export default function CostSlaPage() {
 
       {policiesQuery.data && <PolicyComparisonCard comparison={policiesQuery.data} />}
 
-      <Card>
+      <Card data-tour="cost-events">
         <CardHeader>
           <CardTitle>Event log</CardTitle>
           <CardDescription>

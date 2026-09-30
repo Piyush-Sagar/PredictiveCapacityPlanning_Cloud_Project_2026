@@ -91,7 +91,7 @@ function LiveAccounts() {
 
   return (
     <div className="flex flex-col gap-5">
-      <Card>
+      <Card data-tour="accounts-connect">
         <CardHeader>
           <CardTitle>Connect an AWS account</CardTitle>
           <CardDescription>
@@ -138,7 +138,7 @@ function LiveAccounts() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="accounts-linked">
         <CardHeader>
           <CardTitle>Linked accounts</CardTitle>
           <CardDescription>The active account scopes every dashboard view.</CardDescription>
@@ -266,7 +266,7 @@ function PolicyCard({ isAdmin, accountName }: { isAdmin: boolean; accountName: s
   }
 
   return (
-    <Card>
+    <Card data-tour="accounts-policy">
       <CardHeader>
         <CardTitle>Scaling policy</CardTitle>
         <CardDescription>
@@ -357,7 +357,7 @@ function ClockCard({ isAdmin }: { isAdmin: boolean }) {
   }
 
   return (
-    <Card>
+    <Card data-tour="accounts-clock">
       <CardHeader>
         <CardTitle>Simulation clock</CardTitle>
         <CardDescription>
@@ -413,7 +413,7 @@ function ClockCard({ isAdmin }: { isAdmin: boolean }) {
 function NotificationsCard() {
   const notes = useApiData<{ messageId: string; subject: string; timestamp: string }[]>("/notifications", () => []);
   return (
-    <Card>
+    <Card data-tour="accounts-sns">
       <CardHeader>
         <CardTitle>SNS deliveries</CardTitle>
         <CardDescription>Latest messages on the capplan-alerts topic, read back from its SQS subscriber.</CardDescription>

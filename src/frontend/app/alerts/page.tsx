@@ -96,7 +96,7 @@ export default function AlertsPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div data-tour="alerts-kpis" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <KpiCard
           label="Pending"
           value={pendingCount}
@@ -113,7 +113,7 @@ export default function AlertsPage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <Tabs value={filter} onValueChange={(value) => setFilter(value as StatusFilter)}>
+        <Tabs data-tour="alerts-tabs" value={filter} onValueChange={(value) => setFilter(value as StatusFilter)}>
           <TabsList variant="line" className="w-full justify-start border-b border-border">
             <TabsTrigger value="all">All ({alerts.length})</TabsTrigger>
             <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>
@@ -122,14 +122,14 @@ export default function AlertsPage() {
             <TabsTrigger value="auto-executed">Auto-executed</TabsTrigger>
           </TabsList>
         </Tabs>
-        <div className="flex flex-wrap items-center gap-2">
+        <div data-tour="alerts-filters" className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-muted-foreground">Filter by:</span>
           <RegionSelector value={regionFilter} onValueChange={setRegionFilter} includeAll />
           <SeveritySelector value={severityFilter} onValueChange={setSeverityFilter} />
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div data-tour="alerts-list" className="flex flex-col gap-2">
         {filtered.length === 0 && (
           <p className="py-8 text-center text-sm text-muted-foreground">No alerts in this view.</p>
         )}

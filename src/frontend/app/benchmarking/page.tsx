@@ -57,7 +57,7 @@ export default function BenchmarkingPage() {
         <p className="text-sm text-muted-foreground">
           Model accuracy, latency, and cost at the selected forecast horizon
         </p>
-        <Tabs value={String(horizon)} onValueChange={(value) => setHorizon(Number(value) as Horizon)}>
+        <Tabs data-tour="bench-horizon" value={String(horizon)} onValueChange={(value) => setHorizon(Number(value) as Horizon)}>
           <TabsList>
             <TabsTrigger value="15">15m</TabsTrigger>
             <TabsTrigger value="30">30m</TabsTrigger>
@@ -67,7 +67,7 @@ export default function BenchmarkingPage() {
       </div>
 
       {IS_LIVE && simulated.length > 0 && (
-        <div className="rounded-lg border border-status-warning/40 bg-status-warning/5 p-3 text-xs text-muted-foreground">
+        <div data-tour="bench-banner" className="rounded-lg border border-status-warning/40 bg-status-warning/5 p-3 text-xs text-muted-foreground">
           <span className="font-medium text-foreground">Foundation models are simulated.</span>{" "}
           {simulated.map((m) => MODEL_LABELS[m]).join(", ")} are emulated from published error, latency and hosting
           profiles (no weights are executed). Seasonal-naive, XGBoost and LSTM are real models trained on the dataset.
@@ -77,7 +77,7 @@ export default function BenchmarkingPage() {
       )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1" data-tour="bench-errors">
           <CardHeader>
             <CardTitle>Error metrics</CardTitle>
             <CardDescription>Lower is better — MAE and RMSE by model.</CardDescription>
@@ -87,7 +87,7 @@ export default function BenchmarkingPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1" data-tour="bench-frontier">
           <CardHeader>
             <CardTitle>Efficiency frontier</CardTitle>
             <CardDescription>Accuracy (MAE) vs. inference latency — lower-left is best.</CardDescription>
@@ -97,7 +97,7 @@ export default function BenchmarkingPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1" data-tour="bench-mix">
           <CardHeader>
             <CardTitle>Model mix</CardTitle>
             <CardDescription>Foundation vs. baseline share of the model portfolio.</CardDescription>
@@ -108,7 +108,7 @@ export default function BenchmarkingPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card data-tour="bench-table">
         <CardHeader>
           <CardTitle>Benchmark table</CardTitle>
           <CardDescription>Sorted by MAE ascending.</CardDescription>

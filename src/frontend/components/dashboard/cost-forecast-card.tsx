@@ -37,7 +37,7 @@ export function CostForecastCard({ forecast }: { forecast: CostForecast }) {
   const { nextHour, monthEnd } = forecast;
 
   return (
-    <Card>
+    <Card data-tour="cost-forecast">
       <CardHeader>
         <CardTitle>Cost forecast</CardTitle>
         <CardDescription>

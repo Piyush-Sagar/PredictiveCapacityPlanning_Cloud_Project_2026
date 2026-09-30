@@ -66,7 +66,7 @@ export default function OverviewPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div data-tour="overview-kpis" className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Current demand"
           value={formatCompactNumber(currentDemand * 1000)}
@@ -91,7 +91,7 @@ export default function OverviewPage() {
       </div>
 
       {pipeline.data && (
-        <Card>
+        <Card data-tour="overview-pipeline">
           <CardHeader>
             <CardTitle>Live pipeline · simulated AWS</CardTitle>
             <CardDescription>
@@ -126,7 +126,7 @@ export default function OverviewPage() {
         </Card>
       )}
 
-      <Card>
+      <Card data-tour="overview-loop">
         <CardHeader>
           <CardTitle>Forecast-to-capacity pipeline</CardTitle>
           <CardDescription>

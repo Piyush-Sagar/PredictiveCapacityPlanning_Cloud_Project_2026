@@ -53,17 +53,19 @@ export default function ConfidencePage() {
         </p>
         <div className="flex items-center gap-3">
           <LiveIndicator />
-          <HorizonSelector value={horizon} onValueChange={setHorizon} />
+          <span data-tour="confidence-horizon">
+            <HorizonSelector value={horizon} onValueChange={setHorizon} />
+          </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div data-tour="confidence-gauges" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {snapshots.map((snapshot) => (
           <ConfidenceGauge key={snapshot.modelName} snapshot={snapshot} />
         ))}
       </div>
 
-      <Card>
+      <Card data-tour="confidence-chart">
         <CardHeader>
           <CardTitle>P90 calibration</CardTitle>
           <CardDescription>Actual coverage vs. the 90% target — lower bars mean under-coverage.</CardDescription>
@@ -73,7 +75,7 @@ export default function ConfidencePage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="confidence-table">
         <CardHeader>
           <CardTitle>Snapshot detail</CardTitle>
           <CardAction className="text-xs text-muted-foreground">All horizons</CardAction>

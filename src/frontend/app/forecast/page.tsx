@@ -82,13 +82,13 @@ export default function ForecastPage() {
         <p className="text-sm text-muted-foreground">Regional demand, updating live</p>
         <LiveIndicator />
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div data-tour="forecast-regions" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {allSeries.map((s) => (
           <RegionSparklineCard key={s.region} series={s} />
         ))}
       </div>
 
-      <Card>
+      <Card data-tour="forecast-chart">
         <CardHeader>
           <CardTitle>Demand forecast — {REGION_LABELS[activeRegion]}</CardTitle>
           <CardDescription>
@@ -97,8 +97,12 @@ export default function ForecastPage() {
           </CardDescription>
           <CardAction className="flex items-center gap-3">
             <LiveIndicator />
-            <RegionSelector value={activeRegion} onValueChange={(value) => setRegion(value as Region)} />
-            <HorizonSelector value={horizon} onValueChange={setHorizon} />
+            <span data-tour="forecast-region-select">
+              <RegionSelector value={activeRegion} onValueChange={(value) => setRegion(value as Region)} />
+            </span>
+            <span data-tour="forecast-horizon">
+              <HorizonSelector value={horizon} onValueChange={setHorizon} />
+            </span>
           </CardAction>
         </CardHeader>
         <CardContent>
@@ -106,7 +110,7 @@ export default function ForecastPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-tour="forecast-table">
         <CardHeader>
           <CardTitle>Recent points</CardTitle>
           <CardDescription>

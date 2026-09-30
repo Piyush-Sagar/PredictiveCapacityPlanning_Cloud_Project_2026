@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { SessionProvider } from "@/lib/session";
+import { TourProvider } from "@/components/tour/tour-provider";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,7 +36,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <TooltipProvider delay={200}>
             <SessionProvider>
-              <AppShell>{children}</AppShell>
+              <TourProvider>
+                <AppShell>{children}</AppShell>
+              </TourProvider>
             </SessionProvider>
             <Toaster />
           </TooltipProvider>

@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { NAV_ITEMS } from "./nav-items";
+import { PageGuide } from "./page-guide";
 
 export function PageHeader() {
   const pathname = usePathname();
@@ -21,6 +22,7 @@ export function PageHeader() {
       </nav>
       <h1 className="mt-1.5 text-xl font-semibold tracking-tight sm:text-2xl">{currentItem.label}</h1>
       <p className="mt-0.5 text-sm text-muted-foreground">{currentItem.description}</p>
+      <PageGuide pathname={pathname} />
     </div>
   );
 }

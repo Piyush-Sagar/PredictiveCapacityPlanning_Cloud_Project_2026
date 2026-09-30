@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Menu, Radar } from "lucide-react";
+import { Bell, GraduationCap, Menu, Radar } from "lucide-react";
 import Link from "next/link";
 
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { AccountSwitcher, SimClockBadge } from "./account-switcher";
 import { CommandMenu } from "./command-menu";
+import { useTour } from "@/components/tour/tour-provider";
 import { SidebarNav } from "./sidebar";
 import { ThemeToggle } from "./theme-toggle";
 import { UserBadge } from "./user-badge";
 
 export function ConsoleHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const tour = useTour();
 
   return (
     <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b border-console-header-border bg-console-header px-3 text-console-header-foreground sm:px-4">
@@ -43,8 +45,19 @@ export function ConsoleHeader() {
         <CommandMenu />
       </div>
 
-      <SimClockBadge />
-      <AccountSwitcher />
+      <div data-tour="header-context" className="flex shrink-0 items-center gap-2">
+        <SimClockBadge />
+        <AccountSwitcher />
+      </div>
+      <button
+        type="button"
+        onClick={() => tour.start("full")}
+        aria-label="Start the interactive tour"
+        title="Interactive tour"
+        className="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md text-console-header-foreground/90 transition-colors hover:bg-console-header-hover hover:text-console-header-foreground"
+      >
+        <GraduationCap className="size-4" />
+      </button>
       <Link
         href="/alerts"
         aria-label="View alerts"
