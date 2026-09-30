@@ -1,0 +1,26 @@
+{
+  "selection": {
+    "15": "xgboost",
+    "30": "lstm",
+    "60": "lstm"
+  },
+  "primaryModel": "xgboost",
+  "systemPolicy": "predictive-xgboost-p90",
+  "fitSeconds": {
+    "chronos": 0.0,
+    "timesfm": 0.0,
+    "moirai": 0.0,
+    "ttm": 0.0,
+    "seasonal-naive": 0.0,
+    "xgboost": 3.25,
+    "lstm": 13.92
+  },
+  "testStart": "2026-09-21 00:00:00+00:00",
+  "testEnd": "2026-09-27 23:55:00+00:00",
+  "simulatedModels": [
+    "chronos",
+    "timesfm",
+    "moirai",
+    "ttm"
+  ]
+}
