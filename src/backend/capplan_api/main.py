@@ -86,6 +86,10 @@ async def lifespan(app: FastAPI):
         seed_results(db, mlconfig.RESULTS_DIR, runtime.time_at(runtime.live_start))
         engine.sim_state(db)
     bootstrap_aws()
+    with dbs.SessionLocal() as db:
+        restored = engine.restore_accounts(db)
+        if restored:
+            log.info("re-created simulated AWS resources for %d account(s)", restored)
     if s.scheduler_enabled:
         sched_mod.scheduler = sched_mod.Scheduler(s.sim_tick_seconds)
         sched_mod.scheduler.start()

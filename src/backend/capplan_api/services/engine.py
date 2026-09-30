@@ -125,6 +125,37 @@ def creds_for(acct: Account, force: bool = False) -> dict:
     return c
 
 
+def restore_account(db: Session, acct: Account) -> dict:
+    """moto keeps state in memory: after a fake-AWS restart the customer's role
+    and ECS services are gone, although in a real account they would persist.
+    Re-create them from our records (same ExternalId) and re-assume."""
+    sts_connect.deploy_access_stack(acct.aws_account_id, acct.external_id)
+    creds = creds_for(acct, force=True)
+    fleets = db.scalars(select(FleetState).where(FleetState.account_id == acct.id)).all()
+    units = {(f.region, f.resource_type): f.current_units for f in fleets}
+    if units:
+        resources.bootstrap_account(creds, acct.regions, config.RESOURCE_TYPES, units)
+    acct.status, acct.last_error = "connected", None
+    return creds
+
+
+def restore_accounts(db: Session) -> int:
+    n = 0
+    for acct in db.scalars(select(Account).where(Account.role_arn.is_not(None), Account.status.in_(["connected", "error"]))):
+        try:
+            creds_for(acct, force=True)
+            if acct.status == "error":
+                acct.status, acct.last_error = "connected", None
+        except Exception:  # noqa: BLE001
+            try:
+                restore_account(db, acct)
+                n += 1
+            except Exception as exc:  # noqa: BLE001
+                acct.status, acct.last_error = "error", f"restore failed: {exc}"
+    db.commit()
+    return n
+
+
 def forget_creds(account_id: str) -> None:
     _CREDS.pop(account_id, None)
 
@@ -679,9 +710,12 @@ def tick(db: Session) -> SimState:
     for acct in connected_accounts(db):
         try:
             creds = creds_for(acct)
-        except sts_connect.ConnectError as exc:
-            acct.status, acct.last_error = "error", str(exc)
-            continue
+        except sts_connect.ConnectError:
+            try:
+                creds = restore_account(db, acct)
+            except Exception as exc:  # noqa: BLE001
+                acct.status, acct.last_error = "error", str(exc)
+                continue
         except Exception as exc:  # noqa: BLE001 - AWS unreachable: keep planning without it
             AWS_STATUS.update(ok=False, lastError=f"{type(exc).__name__}: {exc}"[:300])
             creds = None
